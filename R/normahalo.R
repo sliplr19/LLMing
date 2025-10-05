@@ -1,5 +1,4 @@
 normahalo <- function(z, rs, S) {
-  require(pracma)
 
   Sij <- matrix(
     rep(NA, length(rs) * ncol(rs[[1]])),
@@ -11,7 +10,7 @@ normahalo <- function(z, rs, S) {
     Xstar <- as.numeric(z[i, ])
     RPi <- rs[[i]]
     mean_RPi <- colMeans(RPi, na.rm = TRUE)
-    sigma <- cov(RPi)
+    sigma <- stats::cov(RPi)
     sigma <- sigma + diag(1e-6, ncol(sigma))
     inv_sigma <- solve(sigma)
     d    <- sum(!is.na(S[,i] & S[,i] != 0))

@@ -1,6 +1,6 @@
 Package: LLMing
 Title: LLM Tools for Psychological Text Analysis
-Version: 0.2.0
+Version: 0.1.0
 Authors@R: 
     person("Lindley", "Slipetz", , "ddj6tu@virginia.edu", role = c("aut", "cre"))
 Description: The LLMing (aka "lemming") R package is a package of general use LLM text analysis methods designed with psychologicaldata in mind. Currently, the package contains a method of text anomaly detection. 

@@ -1,7 +1,6 @@
 sim_SNN <- function(z_dat, k, tops){
-  require(dbscan)
   s <- tops
-  SNN <- sNN(z_dat,k, jp = FALSE, sort = FALSE, search = "dist", bucketSize = 10, approx = 0)
+  SNN <- dbscan::sNN(z_dat, k, jp = FALSE, sort = FALSE, search = "dist", bucketSize = 10, approx = 0)
   SNN_id <- SNN$id
   temp_neighbor <- matrix(0, ncol = nrow(SNN_id), nrow = nrow(SNN_id))
   for(i in 1:(nrow(SNN_id)-1)){
@@ -10,9 +9,11 @@ sim_SNN <- function(z_dat, k, tops){
     }
   }
   temp_neighbor = temp_neighbor + t(temp_neighbor)
-  output = t(apply(temp_neighbor,FUN =  function(x){
-    return(order(x,decreasing = T)[1:s])
+  output = t(apply(temp_neighbor, FUN = function(x){
+    return(order(x, decreasing = T)[1:s])
   }, MARGIN = 1))
   return(output)
 }
+
+
 
