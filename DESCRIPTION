@@ -1,10 +1,19 @@
 Package: LLMing
 Title: LLM Tools for Psychological Text Analysis
-Version: 0.0.0.9000
+Version: 0.2.0
 Authors@R: 
     person("Lindley", "Slipetz", , "ddj6tu@virginia.edu", role = c("aut", "cre"))
-Description: The LLMing (aka "lemming") R package is a package of general use LLM text analysis methods designed with psychological data in mind. Currently, the package contains a method of text anomaly detection. 
-License: `use_mit_license()`
+Description: The LLMing (aka "lemming") R package is a package of general use LLM text analysis methods designed with psychologicaldata in mind. Currently, the package contains a method of text anomaly detection. 
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
+Imports:
+    quanteda,
+    stopwords,
+    stringi,
+    reticulate,
+    text,
+    dbscan,
+    pracma,
+    stats
