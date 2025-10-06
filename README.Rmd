@@ -1,0 +1,42 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# LLMing
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of LLMing is to generate and assess psychological text data.
+
+## Installation
+
+You can install the development version of LLMing from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("pak")
+pak::pak("sliplr19/LLMing")
+```
+
+## Example
+
+This is a basic example which shows you how to get BERT embeddings:
+
+```{r example}
+library(LLMing)
+df <- data.frame(text = c("I slept well and feel great today!",
+                          "I saw from friends and it went well.",
+                          "I think I failed that exam. I'm such a disapointment."))
+emb_dat <- embed(dat = df, layers = 1, keep_tokens = FALSE, tokens_method = "mean")
+```
