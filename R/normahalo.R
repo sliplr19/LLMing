@@ -1,3 +1,14 @@
+#' Local outlier score
+#'
+#' Computes a normalized Mahalanobis distance score. Only features with nonzero scores in S
+#' receive nonzero Mahalanobis scores.
+#'
+#' @param z Dataframe of z scores
+#' @param rs List of reference sets
+#' @param S Dataframe of numeric values
+#'
+#' @returns A dataframe of local outlier scores
+#' @export
 normahalo <- function(z, rs, S) {
 
   Sij <- matrix(

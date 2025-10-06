@@ -1,3 +1,15 @@
+#' Compute shared nearest neighbors
+#'
+#' Builds a shared nearest neighbors matrix and,
+#' for each row (observation), returns the indices of the top neighbors
+#' with the largest SNN overlap counts
+#'
+#' @param z_dat A dataframe with numeric columns
+#' @param k An integer representing number of nearest neighbors
+#' @param tops An integer representing how many of shared nearest neighbors to return
+#'
+#' @returns A dataframe of top rows with shared nearest neighbors
+#' @export
 sim_SNN <- function(z_dat, k, tops){
   s <- tops
   SNN <- dbscan::sNN(z_dat, k, jp = FALSE, sort = FALSE, search = "dist", bucketSize = 10, approx = 0)

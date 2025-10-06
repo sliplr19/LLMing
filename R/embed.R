@@ -1,3 +1,34 @@
+#' Embed texts with a Transformer model
+#'
+#' Cleans a text column and converts it to a dataframe of numeric vectors via
+#' BERT embeddings. For the input dataframe, each row
+#' is one text entry.
+#'
+#' @param dat A dataframe with text data, one text per row
+#' @param layers Integer vector specifying which model layers to aggregate from.
+#' @param keep_tokens Logical, keep token-level embeddings in the returned
+#'   object or discard them to save memory
+#' @param tokens_method  Character scalar controlling how token-level
+#'   embeddings are aggregated to word types
+#'
+#' @returns A dataframe where each row corresponds to one input text and each
+#'   column is an embedding dimension
+#'
+#'   @examples df <- data.frame(
+#'   text = c(
+#'     "I slept well and feel great today!",
+#'     "I saw from friends and it went well.",
+#'     "I think I failed that exam. I'm such a disapointment."
+#'   )
+#' )
+#'
+#' emb_dat <- embed(
+#'   dat = df,
+#'   layers = 1,
+#'   keep_tokens = FALSE,
+#'   tokens_method = "mean"
+#' )
+#' @export
 embed <- function(dat, layers, keep_tokens = TRUE, tokens_method = NULL){
   nltk  <- reticulate::import("nltk")
   torch <- reticulate::import("torch", delay_load = TRUE)

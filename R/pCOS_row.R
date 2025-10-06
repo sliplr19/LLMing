@@ -1,3 +1,13 @@
+#' Pairwise cosine-style row score
+#'
+#' Given two numeric vectors, computes an average
+#' cosine-based similarity.
+#'
+#' @param z Numeric vector
+#' @param v_SNN Numeric vector, same size as z
+#'
+#' @returns A numeric vector
+#' @export
 pCOS_row = function(z, v_SNN){
   l = as.numeric(z) - as.numeric(v_SNN)
   l[l == 0] = 10^-5
