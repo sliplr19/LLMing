@@ -1,6 +1,9 @@
 ---
-output: github_document
+output:
+  github_document:
+    html_preview: false
 ---
+
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -40,3 +43,6 @@ df <- data.frame(text = c("I slept well and feel great today!",
                           "I think I failed that exam. I'm such a disapointment."))
 emb_dat <- embed(dat = df, layers = 1, keep_tokens = FALSE, tokens_method = "mean")
 ```
+rmarkdown::render("README.Rmd",
+  output_format = rmarkdown::github_document(html_preview = FALSE)
+)
