@@ -8,9 +8,9 @@ Authors@R: c(
            role = "aut"),
     person("Siqi", "Sun", email = "mgd6vc@virginia.edu",
            role = "ctb")
-)
+    )
 Maintainer: Lindley Slipetz <ddj6tu@virginia.edu>
-Description: The LLMing (aka "lemming") R package is a package of general use LLM text analysis methods designed with psychologicaldata in mind. Currently, the package contains a method of text anomaly detection. 
+Description: The LLMing (aka "lemming") R package is a package of general use LLM text analysis methods designed with psychological data in mind. Currently, the package contains a method of text anomaly detection. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
