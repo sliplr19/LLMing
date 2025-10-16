@@ -8,8 +8,26 @@
 \description{
 Package-level documentation and references.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/sliplr19/LLMing}
+  \item Report bugs at \url{https://github.com/sliplr19/LLMing/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Lindley Slipetz \email{ddj6tu@virginia.edu}
+
+Authors:
+\itemize{
+  \item Teague Henry \email{ycp6wm@virginia.edu}
+}
+
+Other contributors:
+\itemize{
+  \item Siqi Sun \email{mgd6vc@virginia.edu} [contributor]
+}
 
 }
 \keyword{internal}

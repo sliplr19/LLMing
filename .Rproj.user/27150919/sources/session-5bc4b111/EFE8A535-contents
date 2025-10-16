@@ -1,8 +1,0 @@
-#' LLMing: Text Analysis Tools for Psychological Data
-#'
-#' @docType _PACKAGE
-#' @name LLMing
-#'
-#' @references
-#' \bibliography{REFERENCES}
-NULL

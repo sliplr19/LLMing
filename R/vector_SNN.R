@@ -1,4 +1,4 @@
-#' Aggregrate dataframe into mean feature vectors
+#' Aggregate dataframe into mean feature vectors
 #'
 #' For each row of the SNN index matrix, this function takes the rows of
 #' reference dataframe, z, and computes their column means, yielding one
