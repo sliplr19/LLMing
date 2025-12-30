@@ -13,7 +13,7 @@ Maintainer: Lindley Slipetz <ddj6tu@virginia.edu>
 Description: A collection of large language model (LLM) text analysis methods
   designed with psychological data in mind. Currently, LLMing (aka "lemming")
   includes a text anomaly detection method based on the angle-based subspace
-  approach described by Zhang, Lin, and Karim (2015)
+  approach described by Zhang, Lin, and Karim (2015) and a text generation method.
   <doi:10.1016/j.ress.2015.05.025>.
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -28,7 +28,10 @@ Imports:
     text,
     dbscan,
     pracma,
-    stats
+    stats,
+    jsonlite
+SystemRequirements: 
+    Python (>= 3.10) with packages: torch, transformers, pandas, numpy
 RdMacros: Rdpack
 URL: https://github.com/sliplr19/LLMing
 BugReports: https://github.com/sliplr19/LLMing/issues
