@@ -18,11 +18,8 @@
 #'   text = c(
 #'     "I slept well and feel great today!",
 #'     "I saw from friends and it went well.",
-<<<<<<< HEAD
 #'     "I think I failed that exam. I'm such a disappointment."
-=======
 #'     "I think I failed that exam. I'm such a disapointment."
->>>>>>> 2f77f8390366cb0a260d35d8b61399470dff6de6
 #'   )
 #' )
 #'

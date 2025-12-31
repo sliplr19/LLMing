@@ -2,7 +2,8 @@
 % Please edit documentation in R/vector_SNN.R
 \name{vector_SNN}
 \alias{vector_SNN}
-\title{Aggregate dataframe into mean feature vectors}
+\title{Aggregate dataframe into mean feature vectors
+Aggregrate dataframe into mean feature vectors}
 \usage{
 vector_SNN(z, snn)
 }

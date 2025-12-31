@@ -2,22 +2,22 @@
 % Please edit documentation in R/text_datagen.R
 \name{text_datagen}
 \alias{text_datagen}
-\title{Generate diary text data via a Python LLM backend}
+\title{Generate text data via Python LLM}
 \usage{
 text_datagen(
   prompts,
   examples,
-  scenario,
-  overall_rules,
-  percentile_scaffold,
-  item_rules,
-  items,
-  structure_rules,
-  percentile_specification,
-  band_specification,
-  example_instruction,
-  what_to_write,
-  task_desc,
+  scenario = NULL,
+  overall_rules = NULL,
+  percentile_scaffold = NULL,
+  item_rules = NULL,
+  items = NULL,
+  structure_rules = NULL,
+  percentile_specification = NULL,
+  band_specification = NULL,
+  example_instruction = NULL,
+  what_to_write = NULL,
+  task_desc = NULL,
   target_min = 90L,
   target_max = 100L,
   temperature = 0.4,
@@ -130,6 +130,6 @@ env                  = NULL   # No token needed
 }
 \description{
 All prompt components and example texts are provided by the user as
-function arguments. This function writes temporary config and data files,
-calls an internal Python script, and returns the generated diary entries.
+function arguments. This function generates text data based on
+severity score from a given questionnaire.
 }
