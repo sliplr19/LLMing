@@ -45,9 +45,8 @@ df <- data.frame(
 )
 
 emb_dat <- embed(
-  dat = df,
-  layers = 1,
-  keep_tokens = FALSE,
-  tokens_method = "mean"
-)
+   dat = df,
+   method = "BERT",
+   text_col = "text"
+ )
 ```

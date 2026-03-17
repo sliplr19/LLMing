@@ -1,6 +1,6 @@
 Package: LLMing
 Title: Large Language Model (LLM) Tools for Psychological Text Analysis
-Version: 1.1.0
+Version: 1.2.0
 Authors@R: c(
     person("Lindley", "Slipetz", email = "ddj6tu@virginia.edu",
            role = c("aut", "cre")),

@@ -79,6 +79,8 @@
 #'  model_name           = "sshleifer/tiny-gpt2",
 #'  env                  = NULL   # No token needed
 #'  )
+#'  @export
+
 
 
 text_datagen <- function(prompts,
@@ -117,23 +119,23 @@ text_datagen <- function(prompts,
   if (!all(c("text", "label") %in% names(examples))) {
     stop("'examples' must contain columns 'text' and 'label'.")
   }
-  
+
   # ---- locate python script in package ----
   pkg <- utils::packageName()
   script_path <- system.file("python", "text_datagen.py", package = pkg)
   if (!nzchar(script_path) || !file.exists(script_path)) {
     stop("Could not find 'text_datagen.py' in inst/python/ of the package.")
   }
-  
+
   # ---- write temporary files ----
   tmp_dir <- tempdir()
   input_csv    <- file.path(tmp_dir, paste0("prompts_",  Sys.getpid(), ".csv"))
   examples_csv <- file.path(tmp_dir, paste0("examples_", Sys.getpid(), ".csv"))
   config_json  <- file.path(tmp_dir, paste0("prompt_cfg_", Sys.getpid(), ".json"))
-  
+
   utils::write.csv(prompts,  input_csv,    row.names = FALSE)
   utils::write.csv(examples, examples_csv, row.names = FALSE)
-  
+
   cfg <- list(
     scenario                = scenario,
     overall_rules           = overall_rules,
@@ -152,14 +154,14 @@ text_datagen <- function(prompts,
     top_p                   = as.numeric(top_p),
     repetition_penalty      = as.numeric(repetition_penalty)
   )
-  
+
   jsonlite::write_json(cfg, config_json, auto_unbox = TRUE, pretty = TRUE)
-  
+
   if (is.null(output_file)) {
     output_file <- file.path(tmp_dir, paste0("diaries_", Sys.getpid(), ".csv"))
   }
   output_file <- normalizePath(output_file, mustWork = FALSE)
-  
+
   # ---- handle env vars (generic) ----
   if (!is.null(env)) {
     if (is.list(env)) {
@@ -168,13 +170,13 @@ text_datagen <- function(prompts,
     if (!is.character(env) || is.null(names(env)) || any(names(env) == "")) {
       stop("'env' must be a named character vector or list.")
     }
-    
+
     env_names <- names(env)
     old_env <- stats::setNames(
       vapply(env_names, Sys.getenv, FUN.VALUE = character(1), unset = NA_character_),
       env_names
     )
-    
+
     on.exit({
       for (nm in env_names) {
         old_val <- old_env[[nm]]
@@ -185,17 +187,17 @@ text_datagen <- function(prompts,
         }
       }
     }, add = TRUE)
-    
+
     for (nm in env_names) {
       Sys.setenv(structure(env[[nm]], names = nm))
     }
   }
-  
+
   # ---- normalize paths ----
   input_csv    <- normalizePath(input_csv,    mustWork = TRUE)
   examples_csv <- normalizePath(examples_csv, mustWork = TRUE)
   config_json  <- normalizePath(config_json,  mustWork = TRUE)
-  
+
   # ---- build args for python ----
   args <- c(
     script_path,
@@ -206,16 +208,16 @@ text_datagen <- function(prompts,
     "--config_file",  config_json,
     "--model_name",   model_name
   )
-  
+
   status <- system2(
     command = python,
     args    = args
   )
-  
+
   if (!identical(status, 0L)) {
     stop("Python text_datagen.py failed with status code: ", status)
   }
-  
+
   res <- utils::read.csv(output_file, stringsAsFactors = FALSE)
   res
 }
