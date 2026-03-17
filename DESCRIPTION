@@ -29,9 +29,18 @@ Imports:
     dbscan,
     pracma,
     stats,
-    jsonlite
+    jsonlite,
+    quanteda,
+    stopwords,
+    stringi,
+    utils,
+    Matrix,
+    text2vec
 SystemRequirements: 
     Python (>= 3.10) with packages: torch, transformers, pandas, numpy
 RdMacros: Rdpack
 URL: https://github.com/sliplr19/LLMing
 BugReports: https://github.com/sliplr19/LLMing/issues
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

@@ -211,7 +211,9 @@ embed <- function(dat,
   # Helper: run python subprocess
   # ------------------------------
   py_run <- function(python_exe, py_lines, env_vars) {
-    if (is.null(python_exe) || !file.exists(python_exe)) stop("Python executable not found: ", python_exe)
+    if (is.null(python_exe) || !file.exists(python_exe)) {
+      stop("Python executable not found: ", python_exe)
+    }
     python_exe <- trimws(python_exe)
     message("Running python executable: ", python_exe)
 
@@ -219,25 +221,52 @@ embed <- function(dat,
     out_csv <- tempfile(fileext = ".csv")
     py_file <- tempfile(fileext = ".py")
 
-    write.csv(data.frame(text = texts_clean), in_csv, row.names = FALSE, fileEncoding = "UTF-8")
+    utils::write.csv(
+      data.frame(text = texts_clean),
+      in_csv,
+      row.names = FALSE,
+      fileEncoding = "UTF-8"
+    )
     writeLines(py_lines, py_file)
 
     out_log <- tempfile()
     err_log <- tempfile()
 
+    # save old env and restore on exit
+    env_names <- sub("=.*$", "", env_vars)
+    old_env <- Sys.getenv(env_names, unset = NA_character_)
+
+    env_list <- as.list(sub("^[^=]*=", "", env_vars))
+    names(env_list) <- env_names
+    do.call(Sys.setenv, env_list)
+
+    on.exit({
+      for (nm in env_names) {
+        old_val <- old_env[[nm]]
+        if (is.na(old_val)) {
+          Sys.unsetenv(nm)
+        } else {
+          do.call(Sys.setenv, stats::setNames(list(old_val), nm))
+        }
+      }
+    }, add = TRUE)
+
     status <- system2(
       python_exe,
       c(py_file, in_csv, out_csv),
       stdout = out_log,
-      stderr = err_log,
-      env = env_vars
+      stderr = err_log
     )
 
     py_out <- readLines(out_log, warn = FALSE)
     py_err <- readLines(err_log, warn = FALSE)
 
-    cat("\n--- python stdout (tail) ---\n", paste(tail(py_out, 80), collapse = "\n"), "\n", sep = "")
-    cat("\n--- python stderr (tail) ---\n", paste(tail(py_err, 200), collapse = "\n"), "\n", sep = "")
+    cat("\n--- python stdout (tail) ---\n",
+        paste(utils::tail(py_out, 80), collapse = "\n"),
+        "\n", sep = "")
+    cat("\n--- python stderr (tail) ---\n",
+        paste(utils::tail(py_err, 200), collapse = "\n"),
+        "\n", sep = "")
 
     if (!identical(status, 0L)) {
       stop(
@@ -245,7 +274,7 @@ embed <- function(dat,
         "stdout log: ", out_log, "\n",
         "stderr log: ", err_log, "\n",
         "---- stderr tail (last 200 lines) ----\n",
-        paste(tail(py_err, 200), collapse = "\n"),
+        paste(utils::tail(py_err, 200), collapse = "\n"),
         "\n"
       )
     }
@@ -254,17 +283,18 @@ embed <- function(dat,
       stop("Python produced an empty output CSV: ", out_csv)
     }
 
-    df <- read.csv(out_csv, check.names = FALSE)
+    df <- utils::read.csv(out_csv, check.names = FALSE)
     emb_mat <- as.matrix(df)
 
-    # sanity: N rows must equal number of input texts
     if (nrow(emb_mat) != length(texts_clean)) {
-      stop("Row mismatch: got ", nrow(emb_mat), " embeddings but had ", length(texts_clean), " input texts.")
+      stop(
+        "Row mismatch: got ", nrow(emb_mat),
+        " embeddings but had ", length(texts_clean), " input texts."
+      )
     }
 
     emb_mat
   }
-
   # ------------------------------
   # E5 / Qwen3 via sentence-transformers
   # ------------------------------
