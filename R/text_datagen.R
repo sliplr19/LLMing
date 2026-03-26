@@ -6,22 +6,19 @@
 #'
 #' @param prompts A data.frame with one row per diary to generate.
 #'   Must contain at least a column indicating severity level.
-#' @param examples A data.frame of example diary texts with columns:
-#'   text or character column and any grouping severity variable column).
-#' @param scenario Character string used in the SCENARIO section. This describes the
-#'   situation in which the data is being collected.
+#' @param examples A data.frame of example diary texts with columns
+#'   `text` and `label`.
+#' @param scenario Character string used in the SCENARIO section.
 #' @param overall_rules Character string describing global writing rules.
 #' @param percentile_scaffold Character string describing how percentiles
 #'   map onto severity.
 #' @param item_rules Character string describing how to internally choose
 #'   symptom patterns.
 #' @param items Character string of the battery under study.
-#' @param structure_rules Character string describing structural rules
-#'   (paragraphs, length, etc.).
+#' @param structure_rules Character string describing structural rules.
 #' @param percentile_specification Character string describing what the
 #'   severity percentile means.
-#' @param band_specification Character string describing severity bands, that is,
-#'   what you expect each band of severity to look like in text.
+#' @param band_specification Character string describing severity bands.
 #' @param example_instruction Character string introducing the example texts.
 #' @param what_to_write Character string describing what the model should
 #'   write about.
@@ -31,56 +28,28 @@
 #' @param temperature Numeric temperature for sampling.
 #' @param top_p Numeric top-p nucleus sampling value.
 #' @param repetition_penalty Numeric repetition penalty.
-#' @param model_name Model identifier string to pass to transformers
-#'   (e.g., "meta-llama/Meta-Llama-3-8B-Instruct", a local path, etc.).
-#' @param batch_size Integer, passed through to the Python script (not heavily
-#'   used yet).
-#' @param python Path to the Python executable. Defaults to
-#'   \code{Sys.getenv("RETICULATE_PYTHON", "python")}.
-#' @param env Optional named character vector or list of environment variables
-#'   to set for the duration of the call (e.g.,
-#'   \code{c(HUGGINGFACE_HUB_TOKEN = "xxx", OPENAI_API_KEY = "yyy")}).
-#'   Any variables set here are restored to their previous values on exit.
-#' @param output_file Optional path to save the output CSV. If `NULL`,
-#'   a temporary file is used and only the data.frame is returned.
+#' @param model_name Model identifier string to pass to transformers.
+#' @param batch_size Integer passed through to the Python script.
+#' @param python Path to the Python executable.
+#' @param env Optional named character vector or list of environment variables.
+#' @param output_file Optional path to save the output CSV.
 #'
 #' @return A data.frame with columns `id`, `severity`, and `response`.
-#'   @examples prompts <- data.frame(
-#'id           = 1:2,
-#'severity     = c(10, 80),
-#'num_examples = c(1, 1)
-#')
-
-#'examples <- data.frame(
-#'  text  = c("Example A", "Example B"),
-#'  label = c("group1", "group2"),
-#'  stringsAsFactors = FALSE
-#')
-
-#'out <- text_datagen(
-#'  prompts              = prompts,
-#'  examples             = examples,
-#'  scenario             = "This is an EMA study on depression",
-#'  overall_rules        = "Write 100 tokens of a diary entry collected every 6 hours.",
-#'  percentile_scaffold  = "The 90th percentile corresponds with severe depression and the 10th percentile corresponds with mild depression",
-#'  item_rules           = "For the 90th percentile, you should write as though you scored a 3 on all items",
-#'  items                = "Insert full battery here.",
-#'  structure_rules      = "Short paragraph.",
-#'  percentile_specification = "Test specification.",
-#'  band_specification   = "Test bands.",
-#'  example_instruction  = "Here are examples.",
-#'  what_to_write        = "Write no less than 100 tokens and no more than 200 tokens",
-#'  task_desc            = "You are a participant in an EMA study on depression scoring in the 90th percentile of X battery.",
-#'  target_min           = 10,
-#'  target_max           = 20,
-#'  temperature          = 0.9,
-#'  top_p                = 0.9,
-#'  repetition_penalty   = 1.0,
-#'  model_name           = "sshleifer/tiny-gpt2",
-#'  env                  = NULL   # No token needed
-#'  )
-#'  @export
-
+#'
+#' @examples
+#' prompts <- data.frame(
+#'   id = 1:2,
+#'   severity = c(10, 80),
+#'   num_examples = c(1, 1)
+#' )
+#'
+#' examples <- data.frame(
+#'   text = c("Example A", "Example B"),
+#'   label = c("group1", "group2"),
+#'   stringsAsFactors = FALSE
+#' )
+#'
+#' @export
 
 
 text_datagen <- function(prompts,

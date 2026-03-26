@@ -57,9 +57,10 @@
 #'
 #' emb_dat <- embed(
 #'   dat = df,
-#'   method = "BERT",
+#'   method = "GloVe",
 #'   text_col = "text"
 #' )
+#'
 #'
 #' @export
 
@@ -76,8 +77,12 @@ embed <- function(dat,
   Sys.setlocale("LC_NUMERIC", "C")
   method <- match.arg(method)
 
-  if (!is.data.frame(dat)) stop("dat must be a data.frame")
-  if (!text_col %in% names(dat)) stop("Missing text column: ", text_col)
+  if (!is.data.frame(dat)) {
+    stop("dat must be a data.frame")
+  }
+  if (!text_col %in% names(dat)) {
+    stop("Missing text column: ", text_col)
+  }
 
   # ---- one row per text ----
   texts <- as.character(dat[[text_col]])
@@ -94,7 +99,12 @@ embed <- function(dat,
   toks <- quanteda::tokens_tolower(toks)
   toks <- quanteda::tokens_remove(toks, stopwords::stopwords("en", source = "smart"))
 
-  texts_clean <- vapply(quanteda::as.list(toks), paste, collapse = " ", FUN.VALUE = character(1))
+  texts_clean <- vapply(
+    quanteda::as.list(toks),
+    paste,
+    collapse = " ",
+    FUN.VALUE = character(1)
+  )
   texts_clean <- stringi::stri_trans_general(texts_clean, "Latin-ASCII")
 
   # Avoid inherited caches confusing transformers
@@ -104,7 +114,9 @@ embed <- function(dat,
 
   # hf_cache_root only required for python-based methods
   if (method %in% c("E5", "Qwen3", "NV-Embed")) {
-    if (is.null(hf_cache_root) || !nzchar(hf_cache_root)) stop("hf_cache_root must be set")
+    if (is.null(hf_cache_root) || !nzchar(hf_cache_root)) {
+      stop("hf_cache_root must be set")
+    }
     dir.create(hf_cache_root, recursive = TRUE, showWarnings = FALSE)
   }
 
@@ -112,8 +124,12 @@ embed <- function(dat,
   # Pure R: GloVe (document mean)
   # ------------------------------
   if (method == "GloVe") {
-    if (!requireNamespace("text2vec", quietly = TRUE)) stop("Install text2vec for GloVe")
-    if (!requireNamespace("Matrix", quietly = TRUE)) stop("Install Matrix for GloVe")
+    if (!requireNamespace("text2vec", quietly = TRUE)) {
+      stop("Install text2vec for GloVe")
+    }
+    if (!requireNamespace("Matrix", quietly = TRUE)) {
+      stop("Install Matrix for GloVe")
+    }
 
     tokens <- text2vec::space_tokenizer(texts_clean)
     it <- text2vec::itoken(tokens, progressbar = FALSE)
@@ -125,20 +141,31 @@ embed <- function(dat,
     tcm <- text2vec::create_tcm(it, vectorizer, skip_grams_window = 5L)
 
     glove <- text2vec::GlobalVectors$new(rank = 50, x_max = 10)
-    wv_main <- glove$fit_transform(tcm, n_iter = 10, convergence_tol = 0.01, n_threads = 4)
+    wv_main <- glove$fit_transform(
+      tcm,
+      n_iter = 10,
+      convergence_tol = 0.01,
+      n_threads = 4
+    )
     wv <- wv_main + t(glove$components)
 
     row_sums <- Matrix::rowSums(dtm)
     row_sums[row_sums == 0] <- 1
     dtm_norm <- dtm / row_sums
+
     return(as.matrix(dtm_norm %*% wv))
   }
+
   # ------------------------------
   # BERT via text::textEmbed (CPU forced) + fix NLTK punkt_tab
   # ------------------------------
   if (method == "BERT") {
-    if (!requireNamespace("text", quietly = TRUE)) stop("Install text for BERT")
-    if (!requireNamespace("reticulate", quietly = TRUE)) stop("Install reticulate for BERT")
+    if (!requireNamespace("text", quietly = TRUE)) {
+      stop("Install text for BERT")
+    }
+    if (!requireNamespace("reticulate", quietly = TRUE)) {
+      stop("Install reticulate for BERT")
+    }
 
     # Writable cache for NLTK downloads (avoid home dir on clusters)
     if (is.null(hf_cache_root) || !nzchar(hf_cache_root)) {
@@ -165,7 +192,7 @@ embed <- function(dat,
       model = "bert-base-uncased",
       layers = 1,
       aggregation_from_layers_to_tokens = "mean",
-      aggregation_from_tokens_to_texts  = "mean",
+      aggregation_from_tokens_to_texts = "mean",
       keep_token_embeddings = FALSE,
       device = device
     )
@@ -173,8 +200,12 @@ embed <- function(dat,
     # ---- Robustly locate embeddings in textEmbed output (version-proof) ----
     find_emb <- function(x, n_texts) {
       # direct hits
-      if (is.data.frame(x) && nrow(x) %in% c(n_texts, 1L) && ncol(x) > 1) return(x)
-      if (is.matrix(x)     && nrow(x) %in% c(n_texts, 1L) && ncol(x) > 1) return(as.data.frame(x))
+      if (is.data.frame(x) && nrow(x) %in% c(n_texts, 1L) && ncol(x) > 1) {
+        return(x)
+      }
+      if (is.matrix(x) && nrow(x) %in% c(n_texts, 1L) && ncol(x) > 1) {
+        return(as.data.frame(x))
+      }
 
       # some versions store as list-of-vectors (one per text)
       if (is.list(x) && length(x) %in% c(n_texts, 1L) && length(x) > 0 && is.numeric(x[[1]])) {
@@ -186,7 +217,9 @@ embed <- function(dat,
       if (is.list(x)) {
         for (nm in names(x)) {
           res <- find_emb(x[[nm]], n_texts)
-          if (!is.null(res)) return(res)
+          if (!is.null(res)) {
+            return(res)
+          }
         }
       }
       NULL
@@ -207,6 +240,7 @@ embed <- function(dat,
 
     return(out)
   }
+
   # ------------------------------
   # Helper: run python subprocess
   # ------------------------------
@@ -217,7 +251,7 @@ embed <- function(dat,
     python_exe <- trimws(python_exe)
     message("Running python executable: ", python_exe)
 
-    in_csv  <- tempfile(fileext = ".csv")
+    in_csv <- tempfile(fileext = ".csv")
     out_csv <- tempfile(fileext = ".csv")
     py_file <- tempfile(fileext = ".py")
 
@@ -261,12 +295,18 @@ embed <- function(dat,
     py_out <- readLines(out_log, warn = FALSE)
     py_err <- readLines(err_log, warn = FALSE)
 
-    cat("\n--- python stdout (tail) ---\n",
-        paste(utils::tail(py_out, 80), collapse = "\n"),
-        "\n", sep = "")
-    cat("\n--- python stderr (tail) ---\n",
-        paste(utils::tail(py_err, 200), collapse = "\n"),
-        "\n", sep = "")
+    cat(
+      "\n--- python stdout (tail) ---\n",
+      paste(utils::tail(py_out, 80), collapse = "\n"),
+      "\n",
+      sep = ""
+    )
+    cat(
+      "\n--- python stderr (tail) ---\n",
+      paste(utils::tail(py_err, 200), collapse = "\n"),
+      "\n",
+      sep = ""
+    )
 
     if (!identical(status, 0L)) {
       stop(
@@ -295,11 +335,14 @@ embed <- function(dat,
 
     emb_mat
   }
+
   # ------------------------------
   # E5 / Qwen3 via sentence-transformers
   # ------------------------------
   if (method %in% c("E5", "Qwen3")) {
-    if (is.null(py_e5_qwen) || !file.exists(py_e5_qwen)) stop("py_e5_qwen not found: ", py_e5_qwen)
+    if (is.null(py_e5_qwen) || !file.exists(py_e5_qwen)) {
+      stop("py_e5_qwen not found: ", py_e5_qwen)
+    }
 
     hf_cache_subdir <- if (method == "E5") "st_e5-base-v2" else "st_qwen3-embed"
     hf_cache <- file.path(hf_cache_root, hf_cache_subdir)
@@ -309,8 +352,14 @@ embed <- function(dat,
     dir.create(file.path(hf_cache, "datasets"), recursive = TRUE, showWarnings = FALSE)
 
     if (isTRUE(auto_install_sentence_transformers)) {
-      suppressWarnings(system2(py_e5_qwen, c("-m", "pip", "install", "-U", "sentence-transformers"),
-                               stdout = TRUE, stderr = TRUE))
+      suppressWarnings(
+        system2(
+          py_e5_qwen,
+          c("-m", "pip", "install", "-U", "sentence-transformers"),
+          stdout = TRUE,
+          stderr = TRUE
+        )
+      )
     }
 
     model_id <- if (method == "E5") "intfloat/e5-base-v2" else "Qwen/Qwen3-Embedding-4B"
@@ -326,6 +375,7 @@ embed <- function(dat,
       "",
       "try:",
       "    import pandas as pd",
+      "    system2(py_e5_qwen, c('-m', 'pip', 'install', 'torch'))",
       "    df = pd.read_csv(in_path)",
       "    texts = df['text'].fillna('').astype(str).tolist()",
       "",
@@ -371,7 +421,9 @@ embed <- function(dat,
   # NV-Embed v2 (handles 2D OR 3D outputs)
   # ------------------------------
   if (method == "NV-Embed") {
-    if (is.null(py_nv) || !file.exists(py_nv)) stop("py_nv not found: ", py_nv)
+    if (is.null(py_nv) || !file.exists(py_nv)) {
+      stop("py_nv not found: ", py_nv)
+    }
 
     hf_cache_subdir <- "nv_NV-Embed-v2"
     hf_cache <- file.path(hf_cache_root, hf_cache_subdir)
@@ -401,7 +453,7 @@ embed <- function(dat,
       "    print('HF_HOME:', cache_dir, flush=True)",
       "    local_dir = snapshot_download(repo_id=model_id, cache_dir=cache_dir)",
       "    print('Snapshot at:', local_dir, flush=True)",
-      "",
+      "    system2(py_nv, c('-m', 'pip', 'install', 'torch'))",
       "    import torch",
       "    from transformers import AutoTokenizer, AutoModel",
       "    device = 'cuda' if (prefer_gpu and torch.cuda.is_available()) else 'cpu'",
@@ -498,4 +550,3 @@ embed <- function(dat,
 
   stop("Unhandled method: ", method)
 }
-

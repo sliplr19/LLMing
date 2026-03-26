@@ -2,4 +2,4 @@
 
 0 errors | 0 warnings | 1 note
 
-* This is a release with a new function.
+* This is a release with a revised function.

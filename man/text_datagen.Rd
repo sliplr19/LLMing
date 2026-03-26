@@ -34,11 +34,10 @@ text_datagen(
 \item{prompts}{A data.frame with one row per diary to generate.
 Must contain at least a column indicating severity level.}
 
-\item{examples}{A data.frame of example diary texts with columns:
-text or character column and any grouping severity variable column).}
+\item{examples}{A data.frame of example diary texts with columns
+\code{text} and \code{label}.}
 
-\item{scenario}{Character string used in the SCENARIO section. This describes the
-situation in which the data is being collected.}
+\item{scenario}{Character string used in the SCENARIO section.}
 
 \item{overall_rules}{Character string describing global writing rules.}
 
@@ -50,14 +49,12 @@ symptom patterns.}
 
 \item{items}{Character string of the battery under study.}
 
-\item{structure_rules}{Character string describing structural rules
-(paragraphs, length, etc.).}
+\item{structure_rules}{Character string describing structural rules.}
 
 \item{percentile_specification}{Character string describing what the
 severity percentile means.}
 
-\item{band_specification}{Character string describing severity bands, that is,
-what you expect each band of severity to look like in text.}
+\item{band_specification}{Character string describing severity bands.}
 
 \item{example_instruction}{Character string introducing the example texts.}
 
@@ -76,60 +73,35 @@ write about.}
 
 \item{repetition_penalty}{Numeric repetition penalty.}
 
-\item{model_name}{Model identifier string to pass to transformers
-(e.g., "meta-llama/Meta-Llama-3-8B-Instruct", a local path, etc.).}
+\item{model_name}{Model identifier string to pass to transformers.}
 
-\item{batch_size}{Integer, passed through to the Python script (not heavily
-used yet).}
+\item{batch_size}{Integer passed through to the Python script.}
 
-\item{python}{Path to the Python executable. Defaults to
-\code{Sys.getenv("RETICULATE_PYTHON", "python")}.}
+\item{python}{Path to the Python executable.}
 
-\item{env}{Optional named character vector or list of environment variables
-to set for the duration of the call (e.g.,
-\code{c(HUGGINGFACE_HUB_TOKEN = "xxx", OPENAI_API_KEY = "yyy")}).
-Any variables set here are restored to their previous values on exit.}
+\item{env}{Optional named character vector or list of environment variables.}
 
-\item{output_file}{Optional path to save the output CSV. If \code{NULL},
-a temporary file is used and only the data.frame is returned.}
+\item{output_file}{Optional path to save the output CSV.}
 }
 \value{
 A data.frame with columns \code{id}, \code{severity}, and \code{response}.
-@examples prompts <- data.frame(
-id           = 1:2,
-severity     = c(10, 80),
-num_examples = c(1, 1)
-)
-examples <- data.frame(
-text  = c("Example A", "Example B"),
-label = c("group1", "group2"),
-stringsAsFactors = FALSE
-)
-out <- text_datagen(
-prompts              = prompts,
-examples             = examples,
-scenario             = "This is an EMA study on depression",
-overall_rules        = "Write 100 tokens of a diary entry collected every 6 hours.",
-percentile_scaffold  = "The 90th percentile corresponds with severe depression and the 10th percentile corresponds with mild depression",
-item_rules           = "For the 90th percentile, you should write as though you scored a 3 on all items",
-items                = "Insert full battery here.",
-structure_rules      = "Short paragraph.",
-percentile_specification = "Test specification.",
-band_specification   = "Test bands.",
-example_instruction  = "Here are examples.",
-what_to_write        = "Write no less than 100 tokens and no more than 200 tokens",
-task_desc            = "You are a participant in an EMA study on depression scoring in the 90th percentile of X battery.",
-target_min           = 10,
-target_max           = 20,
-temperature          = 0.9,
-top_p                = 0.9,
-repetition_penalty   = 1.0,
-model_name           = "sshleifer/tiny-gpt2",
-env                  = NULL   # No token needed
-)
 }
 \description{
 All prompt components and example texts are provided by the user as
 function arguments. This function generates text data based on
 severity score from a given questionnaire.
+}
+\examples{
+prompts <- data.frame(
+  id = 1:2,
+  severity = c(10, 80),
+  num_examples = c(1, 1)
+)
+
+examples <- data.frame(
+  text = c("Example A", "Example B"),
+  label = c("group1", "group2"),
+  stringsAsFactors = FALSE
+)
+
 }

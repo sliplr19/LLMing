@@ -6,14 +6,16 @@
 #' @param k An integer representing number of nearest neighbors
 #' @param tops An integer representing how many of shared nearest neighbors to return
 #' @param theta Numeric threshold
+#' @param text_method Character scalar specifying the embedding method. One of
+#'   `"E5"`, `"Qwen3"`, `"NV-Embed"`, `"BERT"`, or `"GloVe"`
 #'
 #' @returns Dataframe of local outlier score
 #'
 #' @references
 #' \insertRef{zhang_angle-based_2015}{LLMing}
 #' @export
-textanomaly <- function(dat, k, tops, theta){
-  dat_embed <- embed(dat, 1, keep_tokens = TRUE, tokens_method = NULL)
+textanomaly <- function(dat, k, tops, theta,text_method){
+  dat_embed <- embed(dat, text_method, text_col = "text")
   z_dat <- z_score(dat_embed)
   snn <- sim_SNN(z_dat, k, tops)
   vecsnn <- vector_SNN(z_dat, snn)

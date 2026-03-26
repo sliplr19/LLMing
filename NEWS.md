@@ -1,4 +1,4 @@
-# LLMing 1.2.0
+# LLMing 1.2.1
 
 
-* Updated embed function
+* Export text_datagen()

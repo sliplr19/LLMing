@@ -2,43 +2,91 @@
 % Please edit documentation in R/embed.R
 \name{embed}
 \alias{embed}
-\title{Embed texts with a Transformer model}
+\title{Embed texts with a selected embedding model}
 \usage{
-embed(dat, layers, keep_tokens = TRUE, tokens_method = NULL)
+embed(
+  dat,
+  method = c("E5", "Qwen3", "NV-Embed", "BERT", "GloVe"),
+  text_col = "text",
+  py_e5_qwen = NULL,
+  py_nv = NULL,
+  hf_cache_root = NULL,
+  max_length = 256,
+  prefer_gpu = FALSE,
+  auto_install_sentence_transformers = FALSE
+)
 }
 \arguments{
-\item{dat}{A dataframe with text data, one text per row}
+\item{dat}{A dataframe containing one text per row.}
 
-\item{layers}{Integer vector specifying which model layers to aggregate from.}
+\item{method}{Character scalar specifying the embedding method. One of
+\code{"E5"}, \code{"Qwen3"}, \code{"NV-Embed"}, \code{"BERT"}, or \code{"GloVe"}.}
 
-\item{keep_tokens}{Logical, keep token-level embeddings in the returned
-object or discard them to save memory}
+\item{text_col}{Character scalar giving the name of the text column in
+\code{dat}. Defaults to \code{"text"}.}
 
-\item{tokens_method}{Character scalar controlling how token-level
-embeddings are aggregated to word types}
+\item{py_e5_qwen}{Optional path to the Python executable to use for the
+\code{"E5"} and \code{"Qwen3"} methods.}
+
+\item{py_nv}{Optional path to the Python executable to use for the
+\code{"NV-Embed"} method.}
+
+\item{hf_cache_root}{Optional path to a cache directory for Hugging Face
+models and related files. Required for Python-backed methods and used as a
+temporary cache for BERT when not otherwise supplied.}
+
+\item{max_length}{Integer maximum sequence length passed to the tokenizer for
+the \code{"NV-Embed"} method. Defaults to \code{256}.}
+
+\item{prefer_gpu}{Logical; if \code{TRUE}, Python-backed methods will try to use a
+CUDA-enabled GPU when available. Defaults to \code{FALSE}.}
+
+\item{auto_install_sentence_transformers}{Logical; if \code{TRUE}, attempts to
+install or update the \code{sentence-transformers} Python package for the
+\code{"E5"} and \code{"Qwen3"} methods. Defaults to \code{FALSE}.}
 }
 \value{
-A dataframe where each row corresponds to one input text and each
-column is an embedding dimension
+A numeric matrix or dataframe with one row per input text and one
+column per embedding dimension.
+}
+\description{
+Cleans a text column and converts it to a numeric embedding matrix or
+dataframe, with one row per input text and one column per embedding
+dimension. Supports pure R and Python-backed embedding methods.
+}
+\details{
+The input text is lightly preprocessed before embedding. This preprocessing:
+\itemize{
+\item removes punctuation, symbols, numbers, and URLs,
+\item converts text to lowercase,
+\item removes English stopwords,
+\item transliterates text to ASCII.
+}
 
-@examples df <- data.frame(
-text = c(
-"I slept well and feel great today!",
-"I saw from friends and it went well.",
-"I think I failed that exam. I'm such a disappointment."
-"I think I failed that exam. I'm such a disapointment."
-)
+Method-specific behavior:
+\itemize{
+\item \code{"GloVe"} uses a pure R workflow via \code{text2vec} and returns
+document-level mean embeddings.
+\item \code{"BERT"} uses \code{text::textEmbed()} with the \code{"bert-base-uncased"}
+model on CPU.
+\item \code{"E5"} and \code{"Qwen3"} use Python and \code{sentence-transformers}.
+\item \code{"NV-Embed"} uses Python and \code{transformers}.
+}
+}
+\examples{
+df <- data.frame(
+  text = c(
+    "I slept well and feel great today!",
+    "I saw friends and it went well.",
+    "I think I failed that exam. I'm such a disappointment."
+  )
 )
 
 emb_dat <- embed(
-dat = df,
-layers = 1,
-keep_tokens = FALSE,
-tokens_method = "mean"
+  dat = df,
+  method = "GloVe",
+  text_col = "text"
 )
-}
-\description{
-Cleans a text column and converts it to a dataframe of numeric vectors via
-BERT embeddings. For the input dataframe, each row
-is one text entry.
+
+
 }

@@ -4,7 +4,7 @@
 \alias{textanomaly}
 \title{Text anomaly score}
 \usage{
-textanomaly(dat, k, tops, theta)
+textanomaly(dat, k, tops, theta, text_method)
 }
 \arguments{
 \item{dat}{A dataframe with text data, one text per row}
@@ -14,6 +14,9 @@ textanomaly(dat, k, tops, theta)
 \item{tops}{An integer representing how many of shared nearest neighbors to return}
 
 \item{theta}{Numeric threshold}
+
+\item{text_method}{Character scalar specifying the embedding method. One of
+\code{"E5"}, \code{"Qwen3"}, \code{"NV-Embed"}, \code{"BERT"}, or \code{"GloVe"}}
 }
 \value{
 Dataframe of local outlier score
