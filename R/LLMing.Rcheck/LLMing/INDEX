@@ -1,0 +1,15 @@
+G_thres                 Thresholding of pCOS dataframe
+clean_texts             Clean texts before embeddings
+construct_validity      Evaluate Construct Validity of Text Embeddings
+embed                   Generate document embeddings
+normahalo               Local outlier score
+pCOS                    pCOS scores for every row of dataframe
+pCOS_row                Pairwise cosine-style row score
+rep_set                 The vectors of the shared nearest neighbors
+sim_SNN                 Compute shared nearest neighbors
+text_datagen            Generate Synthetic Text Using an Ollama
+                        Language Model
+textanomaly             Text anomaly score
+vector_SNN              Aggregate dataframe into mean feature vectors
+                        Aggregrate dataframe into mean feature vectors
+z_score                 Z-score on columns
