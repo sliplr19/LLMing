@@ -24,6 +24,9 @@
 #' @param model Character string. Name of the Ollama model used for text
 #'   generation, for example `"llama3:8b"`.
 #'
+#' @param python_script Character. Path to the Python script used to generate
+#'   the synthetic text.
+#'
 #' @param python_path Character string. Python executable used to run the
 #'   package's Python generation script. Defaults to `"python"`.
 #'
@@ -99,7 +102,7 @@ text_datagen <- function(
     prompt_template,
     items,
     severity_instructions,
-    python_script,
+    python_script = "text_datagen.py",
     python_path = "python",
     severity_min = 10,
     severity_max = 90,
