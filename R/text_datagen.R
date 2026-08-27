@@ -99,6 +99,7 @@ text_datagen <- function(
     prompt_template,
     items,
     severity_instructions,
+    python_script,
     python_path = "python",
     severity_min = 10,
     severity_max = 90,
@@ -120,6 +121,7 @@ text_datagen <- function(
     verbose = TRUE
 ) {
 
+
   if (!file.exists(prompt_info_csv)) {
     stop(
       "Could not find `prompt_info_csv`: ",
@@ -135,6 +137,15 @@ text_datagen <- function(
       call. = FALSE
     )
   }
+
+  if (!file.exists(python_script)) {
+    stop(
+      "Could not find `python_script`: ",
+      python_script,
+      call. = FALSE
+    )
+  }
+
 
   prompt_info <- utils::read.csv(
     prompt_info_csv,
@@ -179,6 +190,7 @@ text_datagen <- function(
     )
   }
 
+
   if ("num" %in% names(prompt_info)) {
 
     num <- suppressWarnings(
@@ -195,6 +207,7 @@ text_datagen <- function(
       )
     }
   }
+
 
   examples <- utils::read.csv(
     examples_csv,
@@ -255,6 +268,7 @@ text_datagen <- function(
       call. = FALSE
     )
   }
+
 
   if (!is.data.frame(severity_instructions)) {
     stop(
@@ -362,6 +376,7 @@ text_datagen <- function(
       )
     }
   }
+
 
   if (severity_min >= severity_max) {
     stop(
@@ -493,34 +508,11 @@ text_datagen <- function(
     }
   }
 
-  python_script <- system.file(
-    "python",
-    "text_datagen.py",
-    package = "LLMing"
+  python_script <- normalizePath(
+    python_script,
+    mustWork = TRUE
   )
 
-  if (!nzchar(python_script)) {
-
-    development_script <- file.path(
-      "inst",
-      "python",
-      "text_datagen.py"
-    )
-
-    if (file.exists(development_script)) {
-      python_script <- development_script
-    }
-  }
-
-  if (
-    !nzchar(python_script) ||
-    !file.exists(python_script)
-  ) {
-    stop(
-      "Could not locate `inst/python/text_datagen.py`.",
-      call. = FALSE
-    )
-  }
 
   task_dir <- tempfile(
     pattern = "text_datagen_"
@@ -571,6 +563,7 @@ text_datagen <- function(
     "label_order_double.txt"
   )
 
+
   writeLines(
     system_prompt,
     system_prompt_file,
@@ -608,6 +601,7 @@ text_datagen <- function(
     useBytes = TRUE
   )
 
+
   output_directory <- dirname(
     normalizePath(
       output_csv,
@@ -621,20 +615,24 @@ text_datagen <- function(
     showWarnings = FALSE
   )
 
+
   python_args <- c(
     shQuote(python_script),
+
     shQuote(
       normalizePath(
         prompt_info_csv,
         mustWork = TRUE
       )
     ),
+
     shQuote(
       normalizePath(
         output_csv,
         mustWork = FALSE
       )
     ),
+
     "--examples",
     shQuote(
       normalizePath(
@@ -642,8 +640,10 @@ text_datagen <- function(
         mustWork = TRUE
       )
     ),
+
     "--model",
     shQuote(model),
+
     "--system_prompt",
     shQuote(
       normalizePath(
@@ -651,6 +651,7 @@ text_datagen <- function(
         mustWork = TRUE
       )
     ),
+
     "--prompt_template",
     shQuote(
       normalizePath(
@@ -658,6 +659,7 @@ text_datagen <- function(
         mustWork = TRUE
       )
     ),
+
     "--items",
     shQuote(
       normalizePath(
@@ -665,6 +667,7 @@ text_datagen <- function(
         mustWork = TRUE
       )
     ),
+
     "--severity_instructions",
     shQuote(
       normalizePath(
@@ -672,6 +675,7 @@ text_datagen <- function(
         mustWork = TRUE
       )
     ),
+
     "--label_order",
     shQuote(
       normalizePath(
@@ -679,6 +683,7 @@ text_datagen <- function(
         mustWork = TRUE
       )
     ),
+
     "--label_order_double",
     shQuote(
       normalizePath(
@@ -686,36 +691,47 @@ text_datagen <- function(
         mustWork = TRUE
       )
     ),
+
     "--severity_min",
     as.character(severity_min),
+
     "--severity_max",
     as.character(severity_max),
+
     "--batch_size",
     as.character(
       as.integer(batch_size)
     ),
+
     "--max_retries",
     as.character(
       as.integer(max_retries)
     ),
+
     "--temperature",
     as.character(temperature),
+
     "--top_p",
     as.character(top_p),
+
     "--repeat_penalty",
     as.character(repeat_penalty),
+
     "--num_predict",
     as.character(
       as.integer(num_predict)
     ),
+
     "--num_ctx",
     as.character(
       as.integer(num_ctx)
     ),
+
     "--min_words",
     as.character(
       as.integer(min_words)
     ),
+
     "--max_words",
     as.character(
       as.integer(max_words)
@@ -723,11 +739,13 @@ text_datagen <- function(
   )
 
   if (isTRUE(require_single_paragraph)) {
+
     python_args <- c(
       python_args,
       "--require_single_paragraph"
     )
   }
+
 
   command_output <- system2(
     command = python_path,
@@ -758,7 +776,10 @@ text_datagen <- function(
     )
   }
 
+
+
   if (command_status != 0L) {
+
     stop(
       paste0(
         "`text_datagen.py` failed with status ",
@@ -772,6 +793,8 @@ text_datagen <- function(
       call. = FALSE
     )
   }
+
+
 
   if (!file.exists(output_csv)) {
     stop(
@@ -793,5 +816,7 @@ text_datagen <- function(
     )
   }
 
-  results
+
+
+  return(results)
 }

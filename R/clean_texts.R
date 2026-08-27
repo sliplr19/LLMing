@@ -69,3 +69,4 @@ clean_texts <- function(
 
   texts_clean
 }
+

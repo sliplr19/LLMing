@@ -27,6 +27,7 @@
 #'   embedding dimension.
 #' @export
 
+
 embed <- function(
     dat,
     embed_method = c("Qwen", "NV", "e5", "word2vec"),
@@ -59,7 +60,7 @@ embed <- function(
     stop("Missing text column: ", text_col, call. = FALSE)
   }
 
-  embed <- match.arg(embed)
+  embed <- match.arg(embed_method)
 
   if (isTRUE(clean)) {
     texts_clean <- clean_texts(dat = dat, text_col = text_col)
@@ -365,6 +366,7 @@ embed <- function(
     paste0("TRANSFORMERS_CACHE=", hf_hub_cache),
     paste0("HF_MODULES_CACHE=", hf_modules_cache),
     paste0("XDG_CACHE_HOME=", xdg_cache_home),
+    "HF_HUB_DISABLE_XET=1",
     "TOKENIZERS_PARALLELISM=false"
   )
 
@@ -523,3 +525,4 @@ embed <- function(
 
   embeddings
 }
+

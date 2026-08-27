@@ -34,6 +34,7 @@
 #'
 #' @return The test dataframe with an added column for predicted scores
 #' @export
+
 construct_validity <- function(
     dat,
     severity_col,
