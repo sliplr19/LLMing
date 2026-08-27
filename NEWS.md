@@ -1,4 +1,3 @@
-# LLMing 1.2.1
+# LLMing 1.3.0
 
-
-* Export text_datagen()
+* Added a `NEWS.md` file to track changes to the package.
